@@ -1,0 +1,227 @@
+
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>افشای شخصیت 💀</title>
+
+<style>
+*{box-sizing:border-box}
+body{
+ margin:0;min-height:100vh;padding:22px 15px;
+ display:flex;align-items:center;justify-content:center;
+ font-family:Tahoma,sans-serif;color:white;
+ background:radial-gradient(circle at top,#42175d,#100818 65%,#050309);
+ overflow-x:hidden
+}
+.stars{position:fixed;inset:0;pointer-events:none;overflow:hidden}
+.star{position:absolute;color:#d9a7ff;animation:twinkle 2s infinite alternate}
+@keyframes twinkle{to{opacity:.2;transform:scale(.6)}}
+.card{
+ position:relative;width:100%;max-width:430px;
+ padding:28px 20px;border:1px solid #a65edb;
+ border-radius:25px;text-align:center;
+ background:#170e22ed;
+ box-shadow:0 0 40px #a52cff22
+}
+.icon{font-size:55px}
+h1{font-size:25px;color:#f0b4ff}
+.desc{color:#d0bddb;line-height:2;font-size:14px}
+input{
+ width:100%;padding:15px;border-radius:13px;
+ border:1px solid #74438d;background:#24162f;
+ color:white;font-size:16px;text-align:center;
+ outline:none;margin:12px 0
+}
+button{
+ border:0;border-radius:13px;padding:14px 18px;
+ width:100%;background:linear-gradient(100deg,#a83eff,#f04caa);
+ color:white;font-size:16px;font-weight:bold;
+ margin-top:9px;cursor:pointer
+}
+button:active{transform:scale(.97)}
+.hidden{display:none}
+.progress{
+ width:100%;height:10px;border-radius:20px;
+ background:#382440;overflow:hidden;margin:22px 0
+}
+.bar{
+ width:0;height:100%;border-radius:20px;
+ background:linear-gradient(90deg,#bb55ff,#ff67c4);
+ transition:width .2s
+}
+#status{font-size:13px;color:#e6c5f5;min-height:25px}
+.result{
+ margin:18px 0;padding:18px 12px;
+ background:#251431;border:1px solid #61347b;
+ border-radius:18px;line-height:2.3
+}
+.score{font-size:32px;color:#ff9bdc;font-weight:bold}
+.small{font-size:11px;color:#a994b8;margin-top:18px}
+</style>
+</head>
+
+<body>
+<div class="stars" id="stars"></div>
+
+<main class="card">
+ <div class="icon">🧠</div>
+ <h1>مرکز افشای شخصیت</h1>
+ <p class="desc">
+  ما شخصیتتو تحلیل می‌کنیم؛<br>
+  مسئولیت نتیجه با خودته 💀
+ </p>
+
+ <section id="entry">
+  <input id="name" maxlength="25"
+   placeholder="اسمتو وارد کن..." autocomplete="off">
+  <button onclick="analyze()">شروع تحلیل شخصیت 🔍</button>
+  <p class="small">⚠️ این سایت فقط برای خنده‌ست؛ تحلیل واقعی نیست!</p>
+ </section>
+
+ <section id="loading" class="hidden">
+  <h3>در حال بررسی پرونده...</h3>
+  <div class="progress"><div class="bar" id="bar"></div></div>
+  <p id="status">در حال اتصال به مغز...</p>
+ </section>
+
+ <section id="result" class="hidden">
+  <h2 id="resultTitle">پرونده بررسی شد 💀</h2>
+  <div class="result" id="details"></div>
+  <p class="desc" id="ending"></p>
+  <button onclick="shareResult()">فرستادن نتیجه برای بقیه 😂</button>
+  <button onclick="again()" style="background:#392447">
+   آزمایش یک قربانی دیگر 🔄
+  </button>
+  <p class="small">تمام نتایج شوخی و تصادفی هستند.</p>
+ </section>
+</main>
+
+<script>
+const $ = id => document.getElementById(id);
+
+for(let i=0;i<45;i++){
+ const s=document.createElement("span");
+ s.className="star";
+ s.textContent=Math.random()>.5?"✦":"☆";
+ s.style.left=Math.random()*100+"%";
+ s.style.top=Math.random()*100+"%";
+ s.style.fontSize=(10+Math.random()*13)+"px";
+ s.style.animationDelay=Math.random()*2+"s";
+ $("stars").appendChild(s);
+}
+
+const statuses=[
+ "در حال اتصال به مغز...",
+ "بررسی سابقه‌ی سوتی‌ها...",
+ "محاسبه‌ی میزان شیطنت...",
+ "جست‌وجوی ذره‌ای منطق...",
+ "تقریباً هیچی نفهمیدیم...",
+ "آماده‌سازی حقیقت تلخ..."
+];
+
+const titles=[
+ "موجود ناشناخته‌ی سال 👽",
+ "استاد خرابکاری 🤡",
+ "نابغه‌ی کاغذی 🧠",
+ "سلطان سوتی 👑",
+ "شخصیت در حال بارگذاری...",
+ "معمای حل‌نشده‌ی بشریت 💀",
+ "کاربر پرخطر برای اعصاب دوستان 😭"
+];
+
+const jokes=[
+ "میزان عقل: در دست بررسی",
+ "میزان سوتی: خارج از ظرفیت",
+ "تعداد سلول‌های بیدار: فعلاً یکی",
+ "احتمال تصمیم منطقی: نامشخص",
+ "وضعیت فعلی: لطفاً با احتیاط نگهداری شود"
+];
+
+let finalText="";
+
+function analyze(){
+ const name=$("name").value.trim();
+ if(!name){
+  $("name").focus();
+  $("name").placeholder="اول اسمتو بنویس دیوونه 😂";
+  return;
+ }
+
+ $("entry").classList.add("hidden");
+ $("loading").classList.remove("hidden");
+
+ let progress=0;
+ const bar=$("bar");
+ const status=$("status");
+
+ const interval=setInterval(()=>{
+  progress+=Math.random()*13+5;
+  if(progress>100)progress=100;
+  bar.style.width=progress+"%";
+  status.textContent=statuses[
+   Math.min(statuses.length-1,
+   Math.floor(progress/100*statuses.length))
+  ];
+
+  if(progress>=100){
+   clearInterval(interval);
+   showResult(name);
+  }
+ },350);
+}
+
+function showResult(name){
+ const title=titles[Math.floor(Math.random()*titles.length)];
+ const score=Math.floor(Math.random()*101);
+
+ const shuffled=[...jokes].sort(()=>Math.random()-.5);
+ const lines=shuffled.slice(0,4);
+
+ $("loading").classList.add("hidden");
+ $("result").classList.remove("hidden");
+ $("resultTitle").textContent="پرونده‌ی "+name+" لو رفت 💀";
+
+ $("details").innerHTML=
+  "<div class='score'>"+score+"٪</div>"+
+  "<div>شاخص عجیب‌بودن</div>"+
+  "<h3>"+title+"</h3>"+
+  lines.map(x=>"<div>• "+x+"</div>").join("");
+
+ $("ending").textContent=
+  "نتیجه‌ی نهایی: "+name+
+  "، لطفاً تا اطلاع ثانوی از تصمیم‌گیری‌های مهم دور بمان 😂";
+
+ finalText="پرونده‌ی محرمانه‌ی "+name+
+  "\nشاخص عجیب‌بودن: "+score+"٪"+
+  "\nعنوان: "+title+
+  "\n"+lines.join("\n")+
+  "\nنتیجه: لطفاً با احتیاط نگهداری شود 💀";
+}
+
+async function shareResult(){
+ try{
+  if(navigator.share){
+   await navigator.share({title:"پرونده‌ی محرمانه 💀",text:finalText});
+  }else if(navigator.clipboard){
+   await navigator.clipboard.writeText(finalText);
+   alert("نتیجه کپی شد 😂 حالا برای رفیقت بفرست!");
+  }else{
+   prompt("متن نتیجه رو کپی کن:",finalText);
+  }
+ }catch(e){
+  if(e.name!=="AbortError") alert("متن نتیجه:\n"+finalText);
+ }
+}
+
+function again(){
+ $("result").classList.add("hidden");
+ $("entry").classList.remove("hidden");
+ $("name").value="";
+ $("bar").style.width="0";
+ $("name").focus();
+}
+</script>
+</body>
+</html>
